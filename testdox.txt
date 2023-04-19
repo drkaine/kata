@@ -1,0 +1,6 @@
+Wall (tests\Wall)
+ [x] Wall lenght
+ [x] Max number of 50 piece on the wall
+ [x] List of max number piece on the wall
+ [ ] List of combination piece on wall
+

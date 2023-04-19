@@ -1,0 +1,50 @@
+name: Pipeline-CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    continue-on-error: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP, extensions and composer with shivammathur/setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1.2
+          extensions: mbstring, xml, iconv, pdo, pdo_mysql, dom, filter, gd, json
+
+      - name: Cache multiple path
+        uses: actions/cache@v2
+        with:
+          path:
+            vendor
+          key: ${{ runner.os }}-${{ hashFiles('comport.lock') }}
+
+      - name: "Composer install"
+        run: composer install --no-interaction --no-progress
+
+      - name: Laravel security-checker
+        run: composer global require enlightn/security-checker
+
+      - name: PHP-CS-FIXER
+        run: |
+            composer require friendsofphp/php-cs-fixer
+            vendor/bin/php-cs-fixer fix --dry-run
+
+      - name: PHPStan
+        run: |
+            composer require --dev phpstan/phpstan
+            composer require phpstan/extension-installer
+            composer config --no-plugins allow-plugins.phpstan/extension-installer true
+            vendor/bin/phpstan
+
+      - name: PHP Unit
+        run: |
+            php artisan test

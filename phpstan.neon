@@ -1,0 +1,14 @@
+parameters:
+    level: 9
+
+    paths:
+        - app/
+
+    excludes_analyse:
+        - tests/
+
+    ignoreErrors:
+
+    reportUnmatchedIgnoredErrors: true
+    checkMissingIterableValueType: true
+    checkFunctionNameCase: true
