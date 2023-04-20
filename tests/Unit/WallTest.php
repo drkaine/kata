@@ -14,6 +14,7 @@ class WallTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->wall = new Wall(250);
+		$this->wall->getListOfMaxNumberPieceOnWall([50, 75]);
 	}
 
 	public function testWallLenght(): void
@@ -30,59 +31,42 @@ class WallTest extends TestCase
 	{
 		$expectedListOfMaxNumberPiece = [
 			[
+				0 => 'wall lenght free',
 				50 => 5,
-				'wall lenght rest' => 0,
 			],
 			[
+				25 => 'wall lenght free',
 				75 => 3,
-				'wall lenght rest' => 25,
 			],
 		];
 
-		$this->assertSame($expectedListOfMaxNumberPiece, $this->wall->getListOfMaxNumberPieceOnWall([50, 75]));
+		$this->assertSame($expectedListOfMaxNumberPiece, $this->wall->listOfPieces);
 	}
 
-	public function testListOfCombinationPieceOnWall(): void
+	public function testListOfMaxNumberPieceAndCombinationPieceOnWall(): void
 	{
-		$expectedListOfCombinationPiece = [
+		$expectedListOfMaxNumberAndCombinationPiece = [
 			[
-				75 => 2,
-				50 => 2,
-				'wall lenght rest' => 0,
+				0 => 'wall lenght free',
+				50 => 5,
 			],
 			[
-				75 => 1,
+				25 => 'wall lenght free',
+				75 => 3,
+			],
+			[
+				0 => 'wall lenght free',
+				50 => 2,
+				75 => 2,
+			],
+			[
+				25 => 'wall lenght free',
 				50 => 3,
-				'wall lenght rest' => 25,
+				75 => 1,
 			],
 		];
 
-		$this->assertSame($expectedListOfCombinationPiece, $this->wall->getListOfCombinationPieceOnWall([50, 75]));
+		$this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]);
+		$this->assertSame($expectedListOfMaxNumberAndCombinationPiece, $this->wall->listOfPieces);
 	}
-
-	// public function testListOfMaxNumberPieceAndCombinationPieceOnWall(): void
-	// {
-	// 	$expectedListOfMaxNumberAndCombinationPiece = [
-	// 		[
-	// 			50 => 5,
-	// 			'wall lenght rest' => 0,
-	// 		],
-	// 		[
-	// 			75 => 3,
-	// 			'wall lenght rest' => 25,
-	// 		],
-	// 		[
-	// 			75 => 2,
-	// 			50 => 2,
-	// 			'wall lenght rest' => 0,
-	// 		],
-	// 		[
-	// 			75 => 1,
-	// 			50 => 3,
-	// 			'wall lenght rest' => 25,
-	// 		],
-	// 	];
-
-	// 	$this->assertSame($expectedListOfMaxNumberAndCombinationPiece, $this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]));
-	// }
 }

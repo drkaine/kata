@@ -10,45 +10,97 @@ class Wall
     {
     }
 
-    public function maxNumberPieceOnWall(int $piece): int
+	public array $listOfPieces;
+
+    public function getListOfMaxNumberPieceOnWall(array $pieces): void
+    {
+        $this->listOfPieces = array_map(function ($piece) {
+            return $this->getListMaxNumberPieceOnWall($piece, $this->lenght);
+        }, $pieces);
+    }
+
+	private function getListMaxNumberPieceOnWall($piece, $lenght)
+    {
+        return [
+			$lenght - ($this->maxNumberPieceOnWall($piece) * $piece) => 'wall lenght free',
+            $piece => $this->maxNumberPieceOnWall($piece),
+        ];
+    }
+
+	public function maxNumberPieceOnWall(int $piece): int
     {
         return (int) ($this->lenght / $piece);
     }
 
-	private function calculateMaxNumberPieceOnWall($piece, $lenght)
+
+    public function getListOfMaxNumberAndCombinationPieceOnWall(array $pieces): void
     {
-        return [
-            $piece => $this->maxNumberPieceOnWall($piece),
-            'wall lenght rest' => $lenght - ($this->maxNumberPieceOnWall($piece) * $piece),
-        ];
+        foreach($pieces as $piece){
+			$this->makeCombination($pieces, $piece);
+        }
     }
 
-    public function getListOfMaxNumberPieceOnWall(array $pieces): array
-    {
-        $result = [];
+	private function makeCombination(array $pieces, int $piece): void
+	{
+		$parameters['maxNumberPiece'] = $this->maxNumberPieceOnWall($piece);
+		$parameters['numberPiece'] = 1;
+		$parameters['wallLenghtFree'] = $this->lenght - $piece;
 
-        $result = array_map(function ($piece) {
-            return $this->calculateMaxNumberPieceOnWall($piece, $this->lenght);
-        }, $pieces);
+		while($parameters['numberPiece'] <= $parameters['maxNumberPiece']) {
+			$this->searchCombination($pieces, $piece, $parameters);
 
-        return $result;
-    }
-
-    // public function getListOfMaxNumberAndCombinationPieceOnWall(array $pieces): array
-    // {
-    //     $result = [];
-
-    //     return $result;
-    // }
-
-	public function getListCombinationPieceOnWall(array $pieces): array
-    {
-        $result = [];
-
-		foreach($pieces as $piece){
-			
+			$parameters['numberPiece'] ++;
 		}
+	}
 
-        return $result;
-    }
+	private function searchCombination(array $pieces, int $piece, array $parameters): void
+	{
+		foreach($pieces as $pieceCombinaison) {
+			$parameters['wallLenghtFree'] = $this->lenght - ($piece * $parameters['numberPiece']);
+			$parameters['maxNumberPieceCombinaison'] = $this->maxNumberPieceOnWall($pieceCombinaison);
+			$parameters['numberPieceCombinaison'] = 1;
+
+			if($piece !== $pieceCombinaison) {
+				$this->addCombination($piece, $pieceCombinaison, $parameters);
+			}
+		}
+	}
+
+	private function addCombination(int $piece,int $pieceCombinaison, array $parameters): void
+	{
+		while($parameters['numberPieceCombinaison'] <= $parameters['maxNumberPieceCombinaison']) {
+			$parameters['wallLenghtFree'] -= $pieceCombinaison;
+
+			if($this->canAddCombinationAtResult($piece, $pieceCombinaison, $parameters['wallLenghtFree'])) {
+				$parameters['resultCombinaison'] = [
+					$piece => $parameters['numberPiece'],
+					$pieceCombinaison => $parameters['numberPieceCombinaison'],
+					$parameters['wallLenghtFree'] => 'wall lenght free',
+				];
+
+				$this->verifyCombination($parameters);
+			}
+
+			$parameters['numberPieceCombinaison'] ++;
+		}
+	}
+
+	private function canAddCombinationAtResult(int $piece, int $pieceCombinaison, int $wallLenghtFree): bool
+	{
+		if($wallLenghtFree === 0) {
+			return true;
+		} elseif($wallLenghtFree < $piece && $wallLenghtFree < $pieceCombinaison && $wallLenghtFree > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private function verifyCombination(array $parameters): void
+	{
+		ksort($parameters['resultCombinaison']);
+
+		if(!array_search($parameters['resultCombinaison'], $this->listOfPieces)){
+			$this->listOfPieces[] = $parameters['resultCombinaison'];
+		}
+	}
 }
