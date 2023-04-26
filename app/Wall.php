@@ -22,7 +22,7 @@ class Wall
 	private function getListMaxNumberPieceOnWall($piece, $lenght)
     {
         return [
-			$lenght - ($this->maxNumberPieceOnWall($piece) * $piece) => 'wall lenght free',
+			'wall lenght free' => $lenght - ($this->maxNumberPieceOnWall($piece) * $piece),
             $piece => $this->maxNumberPieceOnWall($piece),
         ];
     }
@@ -75,7 +75,7 @@ class Wall
 				$parameters['resultCombinaison'] = [
 					$piece => $parameters['numberPiece'],
 					$pieceCombinaison => $parameters['numberPieceCombinaison'],
-					$parameters['wallLenghtFree'] => 'wall lenght free',
+					'wall lenght free' => $parameters['wallLenghtFree'],
 				];
 
 				$this->verifyCombination($parameters);
@@ -102,5 +102,54 @@ class Wall
 		if(!array_search($parameters['resultCombinaison'], $this->listOfPieces)){
 			$this->listOfPieces[] = $parameters['resultCombinaison'];
 		}
+	}
+
+	public array $listOfPiecesWhoFillExactlyTheWall;
+
+	public function getListOfCombinationPieceWhoFillExactlyTheWall(): void
+	{
+		foreach($this->listOfPieces as $pieceCombinaison){
+			if($pieceCombinaison['wall lenght free'] === 0){
+				$this->listOfPiecesWhoFillExactlyTheWall[] = $pieceCombinaison;
+			}
+		}
+	}
+
+	public function getListOfPriceCombinationPieceOnWall(array $listOfPrice): void
+	{
+		foreach($this->listOfPiecesWhoFillExactlyTheWall as $key => $pieceCombinaison){
+			$totalPrice = $this->sumOfPiecePrice($pieceCombinaison, $listOfPrice);
+
+			$this->listOfPiecesWhoFillExactlyTheWall[$key]['price'] = $totalPrice;
+		}
+	}
+
+	private function sumOfPiecePrice(array $pieceCombinaison, array $listOfPrice): int
+	{
+		$totalPrice = 0;
+
+		foreach($pieceCombinaison as $piece => $numberOfPiece){
+			if(is_string($piece)){
+				continue;
+			}
+			$totalPrice += $numberOfPiece * $listOfPrice[$piece];
+		}
+
+		return $totalPrice;
+	}
+
+	public function getTheCheapestPrice(): array
+	{
+		$comparator = 9999;
+		$cheapest = [];
+
+		foreach($this->listOfPiecesWhoFillExactlyTheWall as $listOfPieces){
+			if($listOfPieces['price'] < $comparator){
+				$cheapest = $listOfPieces;
+			}
+		}
+
+
+		return $cheapest;
 	}
 }

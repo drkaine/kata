@@ -31,11 +31,11 @@ class WallTest extends TestCase
 	{
 		$expectedListOfMaxNumberPiece = [
 			[
-				0 => 'wall lenght free',
+				'wall lenght free' => 0,
 				50 => 5,
 			],
 			[
-				25 => 'wall lenght free',
+				'wall lenght free' => 25,
 				75 => 3,
 			],
 		];
@@ -47,20 +47,20 @@ class WallTest extends TestCase
 	{
 		$expectedListOfMaxNumberAndCombinationPiece = [
 			[
-				0 => 'wall lenght free',
+				'wall lenght free' => 0,
 				50 => 5,
 			],
 			[
-				25 => 'wall lenght free',
+				'wall lenght free' => 25,
 				75 => 3,
 			],
 			[
-				0 => 'wall lenght free',
+				'wall lenght free' => 0,
 				50 => 2,
 				75 => 2,
 			],
 			[
-				25 => 'wall lenght free',
+				'wall lenght free' => 25,
 				50 => 3,
 				75 => 1,
 			],
@@ -68,5 +68,61 @@ class WallTest extends TestCase
 
 		$this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]);
 		$this->assertSame($expectedListOfMaxNumberAndCombinationPiece, $this->wall->listOfPieces);
+	}
+
+	public function testListOfCombinationPieceWhoFillExactlyTheWall(): void
+	{
+		$expectedListOfPieceWhoFillExactlyTheWall = [
+			[
+				'wall lenght free' => 0,
+				50 => 5,
+			],
+			[
+				'wall lenght free' => 0,
+				50 => 2,
+				75 => 2,
+			],
+		];
+
+		$this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]);
+		$this->wall->getListOfCombinationPieceWhoFillExactlyTheWall();
+		$this->assertSame($expectedListOfPieceWhoFillExactlyTheWall, $this->wall->listOfPiecesWhoFillExactlyTheWall);
+	}
+
+	public function testListOfPriceCombinationPieceOnWall(): void
+	{
+		$expectedListOfPieceWhoFillExactlyTheWall = [
+			[
+				'wall lenght free' => 0,
+				50 => 5,
+				'price' => 295,
+			],
+			[
+				'wall lenght free' => 0,
+				50 => 2,
+				75 => 2,
+				'price' => 242,
+			],
+		];
+
+		$this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]);
+		$this->wall->getListOfCombinationPieceWhoFillExactlyTheWall();
+		$this->wall->getListOfPriceCombinationPieceOnWall([50 => 59, 75 => 62]);
+		$this->assertSame($expectedListOfPieceWhoFillExactlyTheWall, $this->wall->listOfPiecesWhoFillExactlyTheWall);
+	}
+
+	public function testListOTheCheapestfPrice(): void
+	{
+		$expectedCheapestPrice = [
+				'wall lenght free' => 0,
+				50 => 2,
+				75 => 2,
+				'price' => 242,
+		];
+
+		$this->wall->getListOfMaxNumberAndCombinationPieceOnWall([50, 75]);
+		$this->wall->getListOfCombinationPieceWhoFillExactlyTheWall();
+		$this->wall->getListOfPriceCombinationPieceOnWall([50 => 59, 75 => 62]);
+		$this->assertSame($expectedCheapestPrice, $this->wall->getTheCheapestPrice());
 	}
 }
